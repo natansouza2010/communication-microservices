@@ -11,9 +11,11 @@ class UserService{
     async findByEmail(req){
         try{
             const { email } = req.params;
+            const { authUser } = req
             this.validateRequestData(email);
             let user = await UserRepository.findByEmail(email);
             this.validateUserNotFound(user);
+            this.validateAuthenticateUser(user, authUser);
 
            
             return {
@@ -47,13 +49,19 @@ class UserService{
         }
     }
 
+    validateAuthenticateUser(user, authUser){
+        if(!authUser || user.id !== authUser.id ){
+            throw new UserException(httpStatus.FORBIDDEN, 'You cannot see this user data')
+        }
+    }
+
     async getAcessToken(req){
         try{
             const {email, password} = req.body;
             this.validateAccessTokenData(email,password);
             let user = await UserRepository.findByEmail(email);
             this.validateUserNotFound(user);
-            await this.validateAccessTokenData(password, user.password);
+            await this.validatePassword(password, user.password);
             const authUser = {id : user.id , name: user.name, email : user.email}
             const accessToken = jwt.sign({authUser}, secrets.API_SECRET ,{expiresIn: '1d'})
             return {
