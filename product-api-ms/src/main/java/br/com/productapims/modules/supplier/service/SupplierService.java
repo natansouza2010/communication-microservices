@@ -1,11 +1,11 @@
-package br.com.productapims.modules.produto.service;
+package br.com.productapims.modules.supplier.service;
 
 
 import br.com.productapims.config.exception.ValidationException;
-import br.com.productapims.modules.produto.dto.CategoryRequest;
-import br.com.productapims.modules.produto.dto.CategoryResponse;
-import br.com.productapims.modules.produto.model.Category;
-import br.com.productapims.modules.produto.repository.CategoryRepository;
+import br.com.productapims.modules.category.dto.CategoryRequest;
+import br.com.productapims.modules.category.dto.CategoryResponse;
+import br.com.productapims.modules.category.model.Category;
+import br.com.productapims.modules.category.repository.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,7 +13,7 @@ import static org.springframework.util.ObjectUtils.isEmpty;
 
 
 @Service
-public class CategoryService {
+public class SupplierService {
     @Autowired
     private CategoryRepository categoryRepository;
 

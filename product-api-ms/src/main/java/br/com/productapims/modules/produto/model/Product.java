@@ -1,6 +1,8 @@
 package br.com.productapims.modules.produto.model;
 
 
+import br.com.productapims.modules.category.model.Category;
+import br.com.productapims.modules.supplier.model.Supplier;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

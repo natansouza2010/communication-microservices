@@ -1,7 +1,7 @@
-package br.com.productapims.modules.produto.dto;
+package br.com.productapims.modules.category.dto;
 
 
-import br.com.productapims.modules.produto.model.Category;
+import br.com.productapims.modules.category.model.Category;
 import lombok.Data;
 import org.springframework.beans.BeanUtils;
 
