@@ -1,19 +1,24 @@
-package br.com.productapims.modules.produto.model;
+package br.com.productapims.modules.product.model;
 
 
 import br.com.productapims.modules.category.model.Category;
+import br.com.productapims.modules.product.dto.ProductRequest;
+import br.com.productapims.modules.supplier.dto.SupplierRequest;
 import br.com.productapims.modules.supplier.model.Supplier;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity(name = "PRODUCT")
 @Table(name ="PRODUCT")
+@Builder
 public class Product {
 
     @Id
@@ -32,6 +37,26 @@ public class Product {
 
     @Column(name = "QUANTITY_AVAILABLE", nullable = false)
     private Integer quantityAvailable;
+
+    @Column(name = "CREATE_AT", nullable = false, updatable = false)
+    private LocalDateTime createAt;
+
+    @PrePersist
+    public void prePersist(){
+        createAt = LocalDateTime.now();
+    }
+
+
+    public static Product of(ProductRequest productRequest, Supplier supplier, Category category){
+        return Product
+                .builder()
+                .name(productRequest.getName())
+                .quantityAvailable(productRequest.getQuantityAvailable())
+                .category(category)
+                .supplier(supplier)
+                .build();
+
+    }
 }
 
 

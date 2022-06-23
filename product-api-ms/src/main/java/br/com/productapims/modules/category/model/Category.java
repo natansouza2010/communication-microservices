@@ -24,7 +24,7 @@ public class Category {
 
     public static Category of(CategoryRequest categoryRequest){
         var category = new Category();
-        BeanUtils.copyProperties(category, category);
+        BeanUtils.copyProperties(categoryRequest, category);
         return category;
     }
 

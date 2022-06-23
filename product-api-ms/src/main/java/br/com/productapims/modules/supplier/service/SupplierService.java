@@ -6,6 +6,10 @@ import br.com.productapims.modules.category.dto.CategoryRequest;
 import br.com.productapims.modules.category.dto.CategoryResponse;
 import br.com.productapims.modules.category.model.Category;
 import br.com.productapims.modules.category.repository.CategoryRepository;
+import br.com.productapims.modules.supplier.dto.SupplierRequest;
+import br.com.productapims.modules.supplier.dto.SupplierResponse;
+import br.com.productapims.modules.supplier.model.Supplier;
+import br.com.productapims.modules.supplier.repository.SupplierRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,21 +19,27 @@ import static org.springframework.util.ObjectUtils.isEmpty;
 @Service
 public class SupplierService {
     @Autowired
-    private CategoryRepository categoryRepository;
+    private SupplierRepository supplierRepository;
 
 
-    public CategoryResponse save(CategoryRequest categoryRequest){
-
-        validateCategoryNameInformed(categoryRequest);
-        var category = categoryRepository.save(Category.of(categoryRequest));
-
-        return CategoryResponse.of(category);
+    public Supplier findById(Integer id){
+        return supplierRepository.findById(id)
+                .orElseThrow(() -> new ValidationException("There's no supplier for the given ID."));
     }
 
 
-    private void validateCategoryNameInformed(CategoryRequest categoryRequest){
-        if(isEmpty(categoryRequest.getDescription())){
-            throw new ValidationException("The category description was not informed.");
+    public SupplierResponse save(SupplierRequest supplierRequest){
+
+        validateSupplierNameInformed(supplierRequest);
+        var supplier = supplierRepository.save(Supplier.of(supplierRequest));
+
+        return SupplierResponse.of(supplier);
+    }
+
+
+    private void validateSupplierNameInformed(SupplierRequest supplierRequest){
+        if(isEmpty(supplierRequest.getName())){
+            throw new ValidationException("The supplier name was not informed.");
 
         }
     }
