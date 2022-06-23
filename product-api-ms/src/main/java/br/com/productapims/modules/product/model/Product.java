@@ -38,12 +38,12 @@ public class Product {
     @Column(name = "QUANTITY_AVAILABLE", nullable = false)
     private Integer quantityAvailable;
 
-    @Column(name = "CREATE_AT", nullable = false, updatable = false)
-    private LocalDateTime createAt;
+    @Column(name = "CREATED_AT", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
 
     @PrePersist
     public void prePersist(){
-        createAt = LocalDateTime.now();
+        createdAt = LocalDateTime.now();
     }
 
 
