@@ -16,6 +16,9 @@ import br.com.productapims.modules.supplier.service.SupplierService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import static org.springframework.util.ObjectUtils.isEmpty;
 
 @Service
@@ -39,6 +42,35 @@ public class ProductService {
         var product = productRepository.save(Product.of(request, supplier, category));
         return ProductResponse.of(product);
     }
+
+
+    public List<ProductResponse> findByName(String name){
+        if(isEmpty(name)){
+            throw new ValidationException("The product name must be informed");
+        }
+        return productRepository.findByNameIgnoreCaseContaining(name).stream().map(product -> ProductResponse.of(product)).collect(Collectors.toList());
+    }
+
+    public List<ProductResponse> findBySupplierId(Integer supplierId){
+        if(isEmpty(supplierId)){
+            throw new ValidationException("The product's supplier ID must be informed");
+        }
+        return productRepository.findBySupplierId(supplierId)
+                .stream().map(product -> ProductResponse.of(product)).collect(Collectors.toList());
+    }
+
+    public List<ProductResponse> findByCategoryId(Integer categoryId){
+        if(isEmpty(categoryId)){
+            throw new ValidationException("The product's category ID must be informed");
+        }
+        return productRepository.findByCategoryId(categoryId)
+                .stream().map(product -> ProductResponse.of(product)).collect(Collectors.toList());
+    }
+
+    public List<ProductResponse> findAll(){
+        return productRepository.findAll().stream().map(product -> ProductResponse.of(product)).collect(Collectors.toList());
+    }
+
 
 
     private void validateProductDataInformed(ProductRequest productRequest){
