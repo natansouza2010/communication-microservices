@@ -50,7 +50,7 @@ public class SupplierService {
         if(isEmpty(name)){
             throw new ValidationException("The supplier name must be informed. ");
         }
-        return supplierRepository.findAll().stream().map(supplier -> SupplierResponse.of(supplier)).collect(Collectors.toList());
+        return supplierRepository.findByNameIgnoreCaseContaining(name).stream().map(supplier -> SupplierResponse.of(supplier)).collect(Collectors.toList());
     }
 
     public List<SupplierResponse> findAll(){

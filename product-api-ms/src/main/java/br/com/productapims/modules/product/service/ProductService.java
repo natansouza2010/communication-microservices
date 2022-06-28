@@ -12,6 +12,7 @@ import br.com.productapims.modules.product.dto.ProductResponse;
 import br.com.productapims.modules.product.model.Product;
 import br.com.productapims.modules.product.repository.ProductRepository;
 
+import br.com.productapims.modules.supplier.dto.SupplierResponse;
 import br.com.productapims.modules.supplier.service.SupplierService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -71,6 +72,16 @@ public class ProductService {
         return productRepository.findAll().stream().map(product -> ProductResponse.of(product)).collect(Collectors.toList());
     }
 
+    public Product findById(Integer id) {
+        if(isEmpty(id)){
+            throw new ValidationException("The product's ID was not informed");
+        }
+        return productRepository.findById(id).orElseThrow( () -> new ValidationException("There's no product for the given ID."));
+    }
+
+    public ProductResponse findByIdResponse(Integer id) {
+        return ProductResponse.of(findById(id));
+    }
 
 
     private void validateProductDataInformed(ProductRequest productRequest){
