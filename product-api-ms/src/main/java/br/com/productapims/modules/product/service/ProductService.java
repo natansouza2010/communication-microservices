@@ -1,6 +1,7 @@
 package br.com.productapims.modules.product.service;
 
 
+import br.com.productapims.config.exception.SuccessResponse;
 import br.com.productapims.config.exception.ValidationException;
 import br.com.productapims.modules.category.dto.CategoryRequest;
 import br.com.productapims.modules.category.dto.CategoryResponse;
@@ -81,6 +82,28 @@ public class ProductService {
 
     public ProductResponse findByIdResponse(Integer id) {
         return ProductResponse.of(findById(id));
+    }
+
+    public Boolean existsByCategoryId(Integer categoryId){
+        return productRepository.existsByCategoryId(categoryId);
+
+    }
+    public Boolean existsBySupplierId(Integer supplierId){
+        return productRepository.existsBySupplierId(supplierId);
+
+    }
+
+    public SuccessResponse delete(Integer id){
+        validateInformedId(id);
+        productRepository.deleteById(id);
+        return SuccessResponse.create("The product was deleted");
+
+    }
+
+    private void validateInformedId(Integer id){
+        if(isEmpty(id)){
+            throw new ValidationException("The product ID must be informed.");
+        }
     }
 
 

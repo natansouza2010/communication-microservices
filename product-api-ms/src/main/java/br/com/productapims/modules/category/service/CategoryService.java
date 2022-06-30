@@ -1,11 +1,13 @@
 package br.com.productapims.modules.category.service;
 
 
+import br.com.productapims.config.exception.SuccessResponse;
 import br.com.productapims.config.exception.ValidationException;
 import br.com.productapims.modules.category.dto.CategoryRequest;
 import br.com.productapims.modules.category.dto.CategoryResponse;
 import br.com.productapims.modules.category.model.Category;
 import br.com.productapims.modules.category.repository.CategoryRepository;
+import br.com.productapims.modules.product.service.ProductService;
 import br.com.productapims.modules.supplier.model.Supplier;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,6 +22,10 @@ import static org.springframework.util.ObjectUtils.isEmpty;
 public class CategoryService {
     @Autowired
     private CategoryRepository categoryRepository;
+
+    @Autowired
+    private ProductService productService;
+
 
     public Category findById(Integer id){
         if(isEmpty(id)){
@@ -51,6 +57,23 @@ public class CategoryService {
 
     public CategoryResponse findByIdResponse(Integer id){
         return CategoryResponse.of(findById(id));
+    }
+
+
+    public SuccessResponse delete(Integer id){
+        validateInformedId(id);
+        if(productService.existsByCategoryId(id)){
+            throw new ValidationException("You cannot delete this category because it's already defined by a product.");
+        }
+        categoryRepository.deleteById(id);
+        return SuccessResponse.create("The category was deleted");
+
+    }
+
+    private void validateInformedId(Integer id){
+        if(isEmpty(id)){
+            throw new ValidationException("The category ID must be informed.");
+        }
     }
 
 
