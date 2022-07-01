@@ -4,6 +4,8 @@ import br.com.productapims.config.exception.SuccessResponse;
 import br.com.productapims.modules.category.dto.CategoryRequest;
 import br.com.productapims.modules.category.dto.CategoryResponse;
 import br.com.productapims.modules.category.service.CategoryService;
+import br.com.productapims.modules.product.dto.ProductRequest;
+import br.com.productapims.modules.product.dto.ProductResponse;
 import br.com.productapims.modules.supplier.dto.SupplierRequest;
 import br.com.productapims.modules.supplier.dto.SupplierResponse;
 import br.com.productapims.modules.supplier.service.SupplierService;
@@ -37,6 +39,11 @@ public class SupplierController {
     @GetMapping("name/{name}")
     public List<SupplierResponse> findByDescription(@PathVariable String name){
         return supplierService.findByName(name);
+    }
+
+    @PutMapping("{id}")
+    public SupplierResponse update (@RequestBody SupplierRequest request , @PathVariable Integer id){
+        return supplierService.update(request, id);
     }
 
     @DeleteMapping("{id}")

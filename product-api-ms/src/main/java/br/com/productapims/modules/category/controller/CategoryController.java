@@ -4,6 +4,7 @@ import br.com.productapims.config.exception.SuccessResponse;
 import br.com.productapims.modules.category.dto.CategoryRequest;
 import br.com.productapims.modules.category.dto.CategoryResponse;
 import br.com.productapims.modules.category.service.CategoryService;
+import br.com.productapims.modules.product.dto.ProductRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,5 +39,11 @@ public class CategoryController {
     public SuccessResponse delete(@PathVariable Integer id){
         return categoryService.delete(id);
     }
+
+    @PutMapping("{id}")
+    public CategoryResponse update (@RequestBody CategoryRequest request ,@PathVariable Integer id){
+        return categoryService.update(request, id);
+    }
+
 
 }

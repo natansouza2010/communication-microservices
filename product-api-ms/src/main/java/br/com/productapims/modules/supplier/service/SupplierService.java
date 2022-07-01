@@ -44,6 +44,15 @@ public class SupplierService {
 
         return SupplierResponse.of(supplier);
     }
+    public SupplierResponse update(SupplierRequest supplierRequest, Integer supplierId){
+
+        validateSupplierNameInformed(supplierRequest);
+        validateInformedId(supplierId);
+        var supplier = Supplier.of(supplierRequest);
+        supplier.setId(supplierId);
+        supplierRepository.save(supplier);
+        return SupplierResponse.of(supplier);
+    }
 
     public SupplierResponse findByIdResponse(Integer id){
         return SupplierResponse.of(findById(id));

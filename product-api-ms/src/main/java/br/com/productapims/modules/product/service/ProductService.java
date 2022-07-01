@@ -45,6 +45,18 @@ public class ProductService {
         return ProductResponse.of(product);
     }
 
+    public ProductResponse update (ProductRequest request, Integer id){
+        validateProductDataInformed(request);
+        validateInformedId(id);
+        validateCategoryAndSupplierIdInformed(request);
+        var category = categoryService.findById(request.getCategoryId());
+        var supplier = supplierService.findById(request.getSupplierId());
+        var product = (Product.of(request, supplier, category));
+        product.setId(id);
+        productRepository.save(product);
+        return ProductResponse.of(product);
+    }
+
 
     public List<ProductResponse> findByName(String name){
         if(isEmpty(name)){
@@ -74,9 +86,7 @@ public class ProductService {
     }
 
     public Product findById(Integer id) {
-        if(isEmpty(id)){
-            throw new ValidationException("The product's ID was not informed");
-        }
+        validateInformedId(id);
         return productRepository.findById(id).orElseThrow( () -> new ValidationException("There's no product for the given ID."));
     }
 

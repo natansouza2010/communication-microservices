@@ -12,6 +12,7 @@ import br.com.productapims.modules.supplier.model.Supplier;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.criteria.CriteriaBuilder;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,10 +36,21 @@ public class CategoryService {
                 .orElseThrow(() -> new ValidationException("There's no category for the given ID."));
     }
 
+
     public CategoryResponse save(CategoryRequest categoryRequest){
 
         validateCategoryNameInformed(categoryRequest);
         var category = categoryRepository.save(Category.of(categoryRequest));
+
+        return CategoryResponse.of(category);
+    }
+    public CategoryResponse update(CategoryRequest categoryRequest, Integer id){
+
+        validateCategoryNameInformed(categoryRequest);
+        validateInformedId(id);
+        var category = Category.of(categoryRequest);
+        category.setId(id);
+        categoryRepository.save(category);
 
         return CategoryResponse.of(category);
     }
