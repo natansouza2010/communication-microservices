@@ -10,6 +10,7 @@ import br.com.productapims.modules.category.repository.CategoryRepository;
 import br.com.productapims.modules.category.service.CategoryService;
 import br.com.productapims.modules.product.dto.ProductRequest;
 import br.com.productapims.modules.product.dto.ProductResponse;
+import br.com.productapims.modules.product.dto.ProductStockDTO;
 import br.com.productapims.modules.product.model.Product;
 import br.com.productapims.modules.product.repository.ProductRepository;
 
@@ -107,6 +108,10 @@ public class ProductService {
         validateInformedId(id);
         productRepository.deleteById(id);
         return SuccessResponse.create("The product was deleted");
+
+    }
+
+    public void updateProductStock(ProductStockDTO product){
 
     }
 
