@@ -2,8 +2,12 @@ server:
   port: ${PORT:8081}
 
 spring:
+
   application:
     name: Product-api
+
+  main:
+    allow-circular-references: true
 
   datasource:
     driver-class-name: org.postgresql.Driver
