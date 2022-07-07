@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -19,6 +20,7 @@ import java.time.LocalDateTime;
 @Entity(name = "PRODUCT")
 @Table(name ="PRODUCT")
 @Builder
+@Slf4j
 public class Product {
 
     @Id
@@ -56,6 +58,11 @@ public class Product {
                 .supplier(supplier)
                 .build();
 
+    }
+
+    public void updateStock(Integer quantity){
+        this.quantityAvailable = this.quantityAvailable - quantity;
+        log.info(String.format("Stock Available %d from product'ID %d", quantityAvailable, id));
     }
 }
 
