@@ -8,13 +8,11 @@ import br.com.productapims.modules.category.dto.CategoryResponse;
 import br.com.productapims.modules.category.model.Category;
 import br.com.productapims.modules.category.repository.CategoryRepository;
 import br.com.productapims.modules.category.service.CategoryService;
-import br.com.productapims.modules.product.dto.ProductQuantityDTO;
-import br.com.productapims.modules.product.dto.ProductRequest;
-import br.com.productapims.modules.product.dto.ProductResponse;
-import br.com.productapims.modules.product.dto.ProductStockDTO;
+import br.com.productapims.modules.product.dto.*;
 import br.com.productapims.modules.product.model.Product;
 import br.com.productapims.modules.product.repository.ProductRepository;
 
+import br.com.productapims.modules.sales.client.SalesClient;
 import br.com.productapims.modules.sales.dto.SalesConfirmationDTO;
 import br.com.productapims.modules.sales.enums.SalesStatus;
 import br.com.productapims.modules.sales.rabbitmq.SalesConfirmationSender;
@@ -47,6 +45,9 @@ public class ProductService {
 
     @Autowired
     private SalesConfirmationSender salesConfirmationSender;
+
+    @Autowired
+    private SalesClient salesClient;
 
     public ProductResponse save (ProductRequest request){
         validateProductDataInformed(request);
@@ -121,6 +122,8 @@ public class ProductService {
         return SuccessResponse.create("The product was deleted");
 
     }
+
+
 
     public void updateProductStock(ProductStockDTO product){
         try{
@@ -208,6 +211,19 @@ public class ProductService {
         }
         if(isEmpty(productRequest.getSupplierId())){
             throw new ValidationException("The supplier ID was not informed.");
+        }
+    }
+
+    public ProductSalesResponse findProductSales(Integer id){
+        var product = findById(id);
+        try{
+            var sales = salesClient.findSalesByProductId(product.getId()).orElseThrow(
+                    ()-> new ValidationException("The sales was not found by this product.")
+            );
+
+            return ProductSalesResponse.of(product, sales.getSalesIds());
+        }catch (Exception e){
+            throw new ValidationException("There was an error trying to get the products's sales.");
         }
     }
 

@@ -6,6 +6,7 @@ import br.com.productapims.modules.category.dto.CategoryResponse;
 import br.com.productapims.modules.category.service.CategoryService;
 import br.com.productapims.modules.product.dto.ProductRequest;
 import br.com.productapims.modules.product.dto.ProductResponse;
+import br.com.productapims.modules.product.dto.ProductSalesResponse;
 import br.com.productapims.modules.product.service.ProductService;
 import br.com.productapims.modules.supplier.dto.SupplierResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,5 +53,10 @@ public class ProductController {
     @DeleteMapping("{id}")
     public SuccessResponse delete (@PathVariable Integer id){
         return productService.delete(id);
+    }
+
+    @GetMapping("{id}/sales")
+    public ProductSalesResponse findProductsSales(@PathVariable Integer id){
+        return productService.findProductSales(id);
     }
 }
