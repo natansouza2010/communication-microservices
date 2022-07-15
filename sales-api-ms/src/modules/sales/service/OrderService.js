@@ -17,6 +17,8 @@ class OrderService {
                 updatedAt: new Date(),
                 products: orderData,
             }
+            await this.validateProductStock(order);
+          
             let createdOrder = await OrderRepository.save(order);
             sendProductStockUpdateQueue(order.products);
 
@@ -35,6 +37,28 @@ class OrderService {
         }
     }
 
+    async updateOrder(orderMessage){
+        try{
+            const order = JSON.parse(orderMessage);
+            if(order.salesId && order.status){
+                let existingOrder = await OrderRepository.findById(orderMessage.salesId);
+                if(existingOrder && order.status !== existingOrder.status){
+                    existingOrder.status = order.status;
+                    await OrderRepository.save(existingOrder);
+    
+                }
+            }else{
+                console.warn('The order message was not complete.'); 
+            }
+           
+
+
+        }catch(err){
+            console.error('Could not parse order message from queue.');
+            console.error(err.message);
+        }
+    }
+
     validateOrderData(data) {
         if(!data || !data.products){
             throw new OrderException(BAD_REQUEST ,'The products must be informed.')
@@ -42,6 +66,14 @@ class OrderService {
         
     }
 
+    async validateProductStock(order){
+        let stockIsOut = true;
+        if(stockIsOut){
+            throw new OrderException(BAD_REQUEST, 'The stock is out for the products');
+        }
+
+    }
+
 }
 
-return new OrderService();
+export default new OrderService();
