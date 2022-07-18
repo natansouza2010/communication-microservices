@@ -7,6 +7,11 @@ class OrderController{
         return res.status(order.status).json(order);
 
     }
+    async findById(req, res){
+        let order = await OrderService.findById(req);
+        return res.status(order.status).json(order);
+        // return res.status(order.status).json(order);
+    }
 
 }
 
