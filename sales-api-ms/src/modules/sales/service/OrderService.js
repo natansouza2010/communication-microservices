@@ -45,12 +45,9 @@ class OrderService {
     }
 
     async updateOrder(orderMessage) {
-        console.log(`Ferrou ${orderMessage}`);
         try {
           const order = JSON.parse(orderMessage);
-          console.log(`o que bugou  ${order.salesId} `);
           if (order.salesId && order.status) {
-            console.log("Aoba entrouuaasdsa")
             let existingOrder = await OrderRepository.findById(order.salesId);
             if (existingOrder && order.status !== existingOrder.status) {
               existingOrder.status = order.status;
@@ -112,10 +109,35 @@ class OrderService {
           };
         }
       }
+
+      async findByProductId(req) {
+        try {
+          const { productId } = req.params;
+          this.validateInformedProductId(productId);
+          const orders = await OrderRepository.findByProductId(productId);
+          if (!orders) {
+            throw new OrderException(BAD_REQUEST, "No orders were found.");
+          }
+          return {
+            status: SUCESS,
+            salesId: orders.map((order)=> {return order.id}),
+          };
+        } catch (err) {
+          return {
+            status: err.status ? err.status : INTERNAL_SERVER_ERROR,
+            message: err.message,
+          };
+        }
+      }
     
       validateInformedId(id) {
         if (!id) {
           throw new OrderException(BAD_REQUEST, "The order ID must be informed.");
+        }
+      }
+      validateInformedProductId(id) {
+        if (!id) {
+          throw new OrderException(BAD_REQUEST, "The order's productID must be informed.");
         }
       }
 

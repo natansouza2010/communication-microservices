@@ -14,6 +14,6 @@ import java.util.Optional;
 )
 public interface SalesClient {
 
-    @GetMapping("products/{productsId}")
+    @GetMapping("/api/orders/product/{productsId}")
     Optional<SalesProductResponse> findSalesByProductId(@PathVariable Integer productId);
 }

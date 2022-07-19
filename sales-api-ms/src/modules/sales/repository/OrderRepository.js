@@ -29,6 +29,15 @@ class OrderRepository{
         }
     }
 
+    async findByProductId(productId){
+        try{
+            return await Order.find({"products.productId" : Number(productId)});
+        }catch(err){
+            console.error(err.message);
+            return null;
+        }
+    }
+
     // async findById(id){
     //     try{
     //         return await User.findOne({where : {id}})
