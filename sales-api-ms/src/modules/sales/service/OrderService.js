@@ -120,7 +120,7 @@ class OrderService {
           }
           return {
             status: SUCESS,
-            salesId: orders.map((order)=> {return order.id}),
+            salesIds: orders.map((order)=> {return order.id}),
           };
         } catch (err) {
           return {
