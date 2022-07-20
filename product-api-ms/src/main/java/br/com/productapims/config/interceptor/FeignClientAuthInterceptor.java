@@ -9,24 +9,20 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 
+import static br.com.productapims.config.RequestUtil.getCurrentRequest;
+
 @Component
 public class FeignClientAuthInterceptor implements RequestInterceptor {
     private static final String AUTHORIZATION = "Authorization";
+    private static final String TRANSACTION_ID = "transactionid";
 
     @Override
     public void apply(RequestTemplate template) {
         var currentRequest = getCurrentRequest();
 
         template.header(AUTHORIZATION, currentRequest.getHeader(AUTHORIZATION));
+        template.header(TRANSACTION_ID, currentRequest.getHeader(TRANSACTION_ID));
     }
 
-    private HttpServletRequest getCurrentRequest(){
-        try{
 
-            return (((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest());
-        }catch (Exception e){
-            e.printStackTrace();
-            throw new ValidationException("The current request could not be processed.");
-        }
-    }
 }

@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static br.com.productapims.config.RequestUtil.getCurrentRequest;
 import static org.springframework.util.ObjectUtils.isEmpty;
 
 @Slf4j
@@ -132,7 +133,7 @@ public class ProductService {
 
         }catch (Exception e){
             log.error("Error while trying to update stock for message with error {}", e.getMessage(), e);
-            var rejectedMessage = new SalesConfirmationDTO(product.getSalesId(), SalesStatus.REJECTED);
+            var rejectedMessage = new SalesConfirmationDTO(product.getSalesId(), SalesStatus.REJECTED, product.getTransactionid());
             salesConfirmationSender.sendSalesConfirmationMessage(rejectedMessage);
 
         }
@@ -153,7 +154,7 @@ public class ProductService {
                 });
         if(!isEmpty(productsForUpdate)){
             productRepository.saveAll(productsForUpdate);
-            var approvedMessage = new SalesConfirmationDTO(product.getSalesId(), SalesStatus.APPROVED);
+            var approvedMessage = new SalesConfirmationDTO(product.getSalesId(), SalesStatus.APPROVED, product.getTransactionid());
             salesConfirmationSender.sendSalesConfirmationMessage(approvedMessage);
         }
 
@@ -215,6 +216,8 @@ public class ProductService {
     }
 
     public SuccessResponse checkProductsStock(ProductCheckStockRequest request){
+        var currentRequest = getCurrentRequest();
+        log.info("`Request to POST login with data ${JSON.stringify(req.body)} | transactionID: ${transactionid} | serviceID: ${serviceid}`");
         if(isEmpty(request) || isEmpty(request.getProducts())){
             throw new ValidationException("The request data and products must be informed.");
         }

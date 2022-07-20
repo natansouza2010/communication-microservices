@@ -6,6 +6,7 @@ import {createInitialData} from './src/config/db/initialData.js'
 import orderRoutes from './src/modules/sales/routes/OrderRoutes.js';
 import { connectRabbitMq } from './src/config/rabbitmq/rabbitConfig.js';
 import {sendProductStockUpdateQueue} from './src/modules/product/rabbitmq/productStockUpdateSender.js';
+import tracing from './src/config/tracing.js';
 const app = express();
 
 const env = process.env;
@@ -40,6 +41,7 @@ connectRabbitMq();
 
 // });
 app.use(express.json());
+app.use(tracing)
 app.use(checkToken);
 app.use(orderRoutes);
 
