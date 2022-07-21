@@ -14,10 +14,12 @@ import br.com.productapims.modules.product.repository.ProductRepository;
 
 import br.com.productapims.modules.sales.client.SalesClient;
 import br.com.productapims.modules.sales.dto.SalesConfirmationDTO;
+import br.com.productapims.modules.sales.dto.SalesProductResponse;
 import br.com.productapims.modules.sales.enums.SalesStatus;
 import br.com.productapims.modules.sales.rabbitmq.SalesConfirmationSender;
 import br.com.productapims.modules.supplier.dto.SupplierResponse;
 import br.com.productapims.modules.supplier.service.SupplierService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,6 +37,8 @@ import static org.springframework.util.ObjectUtils.isEmpty;
 public class ProductService {
 
     private static final Integer ZERO = 0;
+    private static final String TRANSACTION_ID = "transactionid";
+    private static final String SERVICE_ID = "serviceid";
     @Autowired
     private ProductRepository productRepository;
 
@@ -216,13 +220,25 @@ public class ProductService {
     }
 
     public SuccessResponse checkProductsStock(ProductCheckStockRequest request){
-        var currentRequest = getCurrentRequest();
-        log.info("`Request to POST login with data ${JSON.stringify(req.body)} | transactionID: ${transactionid} | serviceID: ${serviceid}`");
-        if(isEmpty(request) || isEmpty(request.getProducts())){
-            throw new ValidationException("The request data and products must be informed.");
+        try {
+            var currentRequest = getCurrentRequest();
+            var transactionid = currentRequest.getHeader(TRANSACTION_ID);
+            var serviceid = currentRequest.getAttribute(SERVICE_ID);
+            log.info("Request to POST product stock with data {} | [transactionID: {} | serviceID: {}]",
+                    new ObjectMapper().writeValueAsString(request), transactionid, serviceid);
+            if (isEmpty(request) || isEmpty(request.getProducts())) {
+                throw new ValidationException("The request data and products must be informed.");
+            }
+            request
+                    .getProducts()
+                    .forEach(this::validateStock);
+            var response = SuccessResponse.create("The stock is ok!");
+            log.info("Response to POST product stock with data {} | [transactionID: {} | serviceID: {}]",
+                    new ObjectMapper().writeValueAsString(response), transactionid, serviceid);
+            return response;
+        } catch (Exception ex) {
+            throw new ValidationException(ex.getMessage());
         }
-        request.getProducts().forEach(this::validateStock);
-        return SuccessResponse.create("The is stock is ok ! ");
 
 
 
@@ -245,14 +261,25 @@ public class ProductService {
 
     public ProductSalesResponse findProductSales(Integer id){
         var product = findById(id);
-        try{
-            var sales = salesClient.findSalesByProductId(product.getId()).orElseThrow(
-                    ()-> new ValidationException("The sales was not found by this product.")
-            );
+        var sales = getSalesByProductId(product.getId());
+        return ProductSalesResponse.of(product, sales.getSalesIds());
+    }
 
-            return ProductSalesResponse.of(product, sales.getSalesIds());
-        }catch (Exception e){
-            throw new ValidationException("There was an error trying to get the products's sales.");
+    private SalesProductResponse getSalesByProductId(Integer productId) {
+        try {
+            var currentRequest = getCurrentRequest();
+            var transactionid = currentRequest.getHeader(TRANSACTION_ID);
+            var serviceid = currentRequest.getAttribute(SERVICE_ID);
+            log.info("Sending GET request to orders by productId with data {} | [transactionID: {} | serviceID: {}]",
+                    productId, transactionid, serviceid);
+            var response = salesClient
+                    .findSalesByProductId(productId)
+                    .orElseThrow(() -> new ValidationException("The sales was not found by this product."));
+            log.info("Recieving response from orders by productId with data {} | [transactionID: {} | serviceID: {}]",
+                    new ObjectMapper().writeValueAsString(response), transactionid, serviceid);
+            return response;
+        } catch (Exception ex) {
+            throw new ValidationException("The sales could not be found.");
         }
     }
 
