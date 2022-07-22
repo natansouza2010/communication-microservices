@@ -45,6 +45,9 @@ dependencies {
 
 
 }
+jar{
+	enabled = false
+}
 
 dependencyManagement {
 	imports {
